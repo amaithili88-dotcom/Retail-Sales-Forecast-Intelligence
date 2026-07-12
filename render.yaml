@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: pharmapulse-forecast
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-web.txt
+    startCommand: gunicorn -w 2 -k gthread -b 0.0.0.0:$PORT wsgi:app
+    healthCheckPath: /health
+    autoDeploy: true

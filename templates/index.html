@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ payload.site.title }}</title>
+  <meta name="description" content="Interactive forecasting dashboard for category-level planning and performance tracking.">
+  <meta property="og:title" content="{{ payload.site.title }}">
+  <meta property="og:description" content="Single-page dashboard for forecasting insights.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <main class="dashboard shell" id="content">
+    <header class="dashboard-head card">
+      <button type="button" id="themeToggle" class="theme-toggle theme-toggle-corner" aria-label="Toggle dark mode">Dark Mode</button>
+      <div>
+        <p class="eyebrow">Forecast Dashboard</p>
+        <h1>PharmaPulse Forecast Intelligence</h1>
+        <p class="subtitle">Simple, fast, single-page planning dashboard for model quality and demand projections.</p>
+      </div>
+      <div class="head-stats">
+        <article>
+          <h2>{{ payload.globalStats.categoriesTracked }}</h2>
+          <p>Categories</p>
+        </article>
+        <article>
+          <h2>{{ "%.2f"|format(payload.globalStats.bestModelWMAPE or 0) }}%</h2>
+          <p>Best WMAPE</p>
+        </article>
+        <article>
+          <h2>{{ payload.globalStats.modelCount }}</h2>
+          <p>Models</p>
+        </article>
+      </div>
+    </header>
+
+    <section class="controls card" aria-label="Forecast controls">
+      <div class="control-group">
+        <label>View Scope</label>
+        <div class="scope-toggle" role="group" aria-label="View scope toggle">
+          <button type="button" id="scopeTotalBtn" class="toggle-btn active">Total</button>
+          <button type="button" id="scopeCategoryBtn" class="toggle-btn">Category</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="categorySelect">Category</label>
+        <select id="categorySelect"></select>
+      </div>
+      <div class="control-group">
+        <label for="horizonRange">Forecast Horizon: <span id="horizonValue">2</span> month(s)</label>
+        <input type="range" id="horizonRange" min="1" max="3" value="2">
+      </div>
+      <div class="control-group">
+        <label>Best Model</label>
+        <div class="best-model-tag" id="bestModelName">-</div>
+      </div>
+    </section>
+
+    <section class="kpi-grid" aria-label="Forecast KPIs">
+      <article class="kpi card">
+        <h3>Forecast Month</h3>
+        <p id="forecastMonth">-</p>
+      </article>
+      <article class="kpi card">
+        <h3>Predicted Sales</h3>
+        <p id="predictedSales">-</p>
+      </article>
+      <article class="kpi card">
+        <h3>Growth vs Prior</h3>
+        <p id="growthVsPrior">-</p>
+      </article>
+      <article class="kpi card">
+        <h3 id="accuracyLabel">Category Accuracy</h3>
+        <p id="categoryAccuracy">-</p>
+      </article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="card chart-card">
+        <div class="card-head">
+          <h3>Historical vs Predicted</h3>
+          <p>Weekly trend and future trajectory</p>
+        </div>
+        <div id="trendChart" class="chart" aria-label="Historical trend chart"></div>
+      </article>
+
+      <article class="card chart-card">
+        <div class="card-head">
+          <h3>Model Comparison</h3>
+          <p>MAE and WMAPE across available models</p>
+        </div>
+        <div id="modelChart" class="chart" aria-label="Model comparison chart"></div>
+      </article>
+    </section>
+
+    <section class="table-grid">
+      <article class="card table-card">
+        <div class="card-head">
+          <h3>Forecast by Month</h3>
+          <p>Selected category based on horizon</p>
+        </div>
+        <div class="table-wrap">
+          <table id="futureTable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Predicted Sales</th>
+                <th>Growth vs Prior (%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card table-card">
+        <div class="card-head">
+          <h3>Top Categories (Next Month)</h3>
+          <p>Highest projected demand</p>
+        </div>
+        <div class="table-wrap">
+          <table id="topTable">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Predicted Sales</th>
+                <th>Growth vs Last Month (%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    window.__PAYLOAD__ = {{ payload | tojson }};
+  </script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
