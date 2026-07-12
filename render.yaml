@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pharmapulse-forecast
+    name: sales-forecast-dashboard
     runtime: python
     plan: free
     buildCommand: pip install -r requirements-web.txt
