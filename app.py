@@ -126,10 +126,10 @@ def build_dashboard_payload():
         "byCategory": by_category,
         "comparison": comparison.to_dict(orient="records"),
         "site": {
-            "title": "PharmaPulse Forecast Platform",
-            "description": "Enterprise forecasting for demand planning with explainable metrics, faster decisions, and conversion-ready dashboards.",
+            "title": "Sales Forecast Platform",
+            "description": "Enterprise forecasting for demand planning with explainable metrics and faster decision-making.",
             "tagline": "Predict demand, defend decisions, accelerate growth.",
-            "metaDescription": "PharmaPulse helps sales and planning teams forecast demand with reliable model performance, category intelligence, and executive reporting.",
+            "metaDescription": "Sales Forecast Platform helps planning teams forecast demand with reliable model performance, category intelligence, and executive reporting.",
         },
         "globalStats": {
             "categoriesTracked": len(categories),

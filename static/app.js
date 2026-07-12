@@ -386,13 +386,13 @@
     renderTopTable();
     setScope("total", Number(horizonRange.value));
 
-    const storedTheme = localStorage.getItem("pharmapulse-theme") || "light";
+    const storedTheme = localStorage.getItem("sales-forecast-theme") || "light";
     applyTheme(storedTheme);
 
     if (themeToggle) {
       themeToggle.addEventListener("click", () => {
         const nextTheme = isDarkTheme() ? "light" : "dark";
-        localStorage.setItem("pharmapulse-theme", nextTheme);
+        localStorage.setItem("sales-forecast-theme", nextTheme);
         applyTheme(nextTheme);
       });
     }
