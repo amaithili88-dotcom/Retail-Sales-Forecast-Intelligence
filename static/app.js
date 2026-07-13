@@ -255,7 +255,19 @@
 
   function plot(targetId, traces, layout) {
     if (typeof Plotly === "undefined") return;
-    Plotly.newPlot(targetId, traces, layout, { displayModeBar: false, responsive: true });
+
+    const mergedLayout = {
+      dragmode: "pan",
+      ...layout,
+    };
+
+    Plotly.newPlot(targetId, traces, mergedLayout, {
+      displayModeBar: true,
+      displaylogo: false,
+      modeBarButtons: [["zoomIn2d", "zoomOut2d", "resetScale2d"]],
+      scrollZoom: true,
+      responsive: true,
+    });
   }
 
   function initResultsPage() {

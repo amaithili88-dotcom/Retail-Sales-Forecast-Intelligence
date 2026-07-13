@@ -413,6 +413,16 @@ input[type="date"] {
   padding: 14px;
 }
 
+.chart-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 95%, #f4f8ff 5%), var(--surface));
+}
+
+[data-theme="dark"] .chart-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, #1d2b42 10%), var(--surface));
+}
+
 .card-head p {
   margin: 6px 0 10px;
   color: var(--muted);
@@ -421,6 +431,24 @@ input[type="date"] {
 
 .chart {
   min-height: 320px;
+}
+
+.chart .modebar {
+  right: 10px !important;
+  top: 8px !important;
+  background: color-mix(in srgb, var(--surface) 90%, transparent 10%) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  padding: 2px !important;
+}
+
+.chart .modebar-btn {
+  color: var(--muted) !important;
+}
+
+.chart .modebar-btn:hover {
+  color: var(--brand) !important;
+  background: color-mix(in srgb, var(--surface-soft) 88%, transparent 12%) !important;
 }
 
 .table-wrap {
