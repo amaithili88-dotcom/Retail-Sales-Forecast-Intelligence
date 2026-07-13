@@ -1,5 +1,5 @@
 """
-Main entry point for the Pharma Sales Forecasting Project.
+Main entry point for the Sales Forecasting Project.
 """
 
 from src.pipelines.etl_pipeline import ETLPipeline
@@ -8,8 +8,8 @@ from src.pipelines.etl_pipeline import ETLPipeline
 def main():
 
     pipeline = ETLPipeline(
-        input_path="data/raw/salesmonthly.csv",
-        output_path="data/processed/pharma_sales_processed.csv"
+        input_path="data/Walmart.csv",
+        output_path="data/processed/walmart_sales_processed.csv"
     )
 
     pipeline.run()

@@ -30,8 +30,16 @@ def test_transform_sorts_by_date(sample_raw_df):
     assert result["date"].is_monotonic_increasing
 
 
-def test_transform_renames_category_column(sample_raw_df):
+def test_transform_keeps_normalized_category_column(sample_raw_df):
     transformer = SalesTransformer()
     result = transformer.transform(sample_raw_df)
-    assert "category_code" in result.columns
-    assert "category" not in result.columns
+    assert "category" in result.columns
+
+
+def test_transform_renames_walmart_columns(sample_walmart_df):
+    transformer = SalesTransformer()
+    result = transformer.transform(sample_walmart_df)
+    assert {"category", "date", "sales_units"}.issubset(result.columns)
+    assert "Store" not in result.columns
+    assert "Date" not in result.columns
+    assert "Weekly_Sales" not in result.columns

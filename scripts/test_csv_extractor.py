@@ -4,7 +4,7 @@ from src.extractors.csv_extractor import CSVExtractor
 def main():
 
     extractor = CSVExtractor(
-        "data/raw/salesmonthly.csv"
+        "data/Walmart.csv"
     )
 
     df = extractor.extract()

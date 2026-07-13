@@ -1,4 +1,5 @@
 from pathlib import Path
+import time
 
 import pandas as pd
 from flask import Flask, jsonify, render_template
@@ -12,6 +13,21 @@ app = Flask(
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static"),
 )
+
+ASSET_VERSION = str(int(time.time()))
+
+
+@app.context_processor
+def inject_asset_version():
+    return {"asset_version": ASSET_VERSION}
+
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 
 def _load_csv(path: Path):
@@ -114,6 +130,30 @@ def build_dashboard_payload():
         by_category[category] = category_payload
 
     best_model = comparison.iloc[0].to_dict()
+    best_wmape = _safe_float(best_model.get("WMAPE"))
+
+    performance_score = None
+    performance_label = "Unavailable"
+    performance_level = "unavailable"
+
+    if best_wmape is not None:
+        performance_score = max(0.0, min(100.0, 100.0 - float(best_wmape)))
+
+        if performance_score >= 95:
+            performance_label = "Excellent"
+            performance_level = "excellent"
+        elif performance_score >= 88:
+            performance_label = "Very Good"
+            performance_level = "very-good"
+        elif performance_score >= 80:
+            performance_label = "Good"
+            performance_level = "good"
+        elif performance_score >= 70:
+            performance_label = "Fair"
+            performance_level = "fair"
+        else:
+            performance_label = "Needs Improvement"
+            performance_level = "needs-improvement"
 
     total_future_next_month = 0.0
     for cat_data in by_category.values():
@@ -126,10 +166,10 @@ def build_dashboard_payload():
         "byCategory": by_category,
         "comparison": comparison.to_dict(orient="records"),
         "site": {
-            "title": "Sales Forecast Platform",
-            "description": "Enterprise forecasting for demand planning with explainable metrics and faster decision-making.",
-            "tagline": "Predict demand, defend decisions, accelerate growth.",
-            "metaDescription": "Sales Forecast Platform helps planning teams forecast demand with reliable model performance, category intelligence, and executive reporting.",
+            "title": "Demand Planning Intelligence Hub",
+            "description": "Professional forecasting workspace for planning leaders to monitor demand, compare models, and guide business decisions.",
+            "tagline": "Business Forecasting and Performance Command Center",
+            "metaDescription": "Demand Planning Intelligence Hub provides planning teams with reliable forecasts, model governance, and executive-ready performance analytics.",
         },
         "globalStats": {
             "categoriesTracked": len(categories),
@@ -137,6 +177,9 @@ def build_dashboard_payload():
             "modelCount": int(len(comparison)),
             "bestModelMAE": _safe_float(best_model.get("MAE")),
             "bestModelWMAPE": _safe_float(best_model.get("WMAPE")),
+            "performanceScore": _safe_float(performance_score),
+            "modelPerformanceLabel": performance_label,
+            "modelPerformanceLevel": performance_level,
         },
         "bestModel": {
             "name": best_model.get("Model"),
@@ -150,9 +193,26 @@ def build_dashboard_payload():
 
 
 @app.route("/")
-def dashboard():
+def landing():
     payload = build_dashboard_payload()
     return render_template("index.html", payload=payload)
+
+
+@app.route("/results")
+def results_page():
+    payload = build_dashboard_payload()
+    return render_template("results.html", payload=payload)
+
+
+@app.route("/model-performance")
+def model_performance_page():
+    payload = build_dashboard_payload()
+    return render_template("model_performance.html", payload=payload)
+
+
+@app.route("/api/dashboard-data")
+def dashboard_data():
+    return jsonify(build_dashboard_payload())
 
 
 @app.route("/health")

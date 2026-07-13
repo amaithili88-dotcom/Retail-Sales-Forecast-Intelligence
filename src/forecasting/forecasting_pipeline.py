@@ -39,16 +39,56 @@ class ForecastingPipeline:
 
         project_root = Path(__file__).resolve().parents[2]
 
-        data_path = (
+        processed_path = (
             project_root
             / "data"
             / "processed"
             / "pharma_sales_processed.csv"
         )
 
-        self.df = pd.read_csv(data_path)
+        walmart_path = (
+            project_root
+            / "data"
+            / "Walmart.csv"
+        )
 
-        return self.df
+        if processed_path.exists():
+            self.df = pd.read_csv(processed_path)
+            return self.df
+
+        if walmart_path.exists():
+            walmart_df = pd.read_csv(walmart_path)
+
+            walmart_df = walmart_df.rename(
+                columns={
+                    "Store": "category",
+                    "Date": "date",
+                    "Weekly_Sales": "sales_units"
+                }
+            )
+
+            walmart_df["category"] = walmart_df["category"].astype(str)
+            walmart_df["date"] = pd.to_datetime(
+                walmart_df["date"],
+                dayfirst=True,
+                errors="coerce"
+            )
+            walmart_df["sales_units"] = pd.to_numeric(
+                walmart_df["sales_units"],
+                errors="coerce"
+            )
+
+            walmart_df = walmart_df.dropna(
+                subset=["category", "date", "sales_units"]
+            )
+
+            self.df = walmart_df
+
+            return self.df
+
+        raise FileNotFoundError(
+            "No supported dataset found. Expected data/processed/pharma_sales_processed.csv or data/Walmart.csv"
+        )
 
     # ----------------------------------------------------
     # Feature Engineering

@@ -15,7 +15,7 @@ class ETLPipeline:
     def run(self):
 
         print("=" * 60)
-        print("PHARMA SALES ETL PIPELINE")
+        print("SALES ETL PIPELINE")
         print("=" * 60)
 
         # Step 1 - Extract

@@ -4,145 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ payload.site.title }}</title>
-  <meta name="description" content="Interactive forecasting dashboard for category-level planning and performance tracking.">
+  <meta name="description" content="Professional forecasting portal with dedicated results and model performance pages.">
   <meta property="og:title" content="{{ payload.site.title }}">
-  <meta property="og:description" content="Single-page dashboard for forecasting insights.">
+  <meta property="og:description" content="Landing, results, and model analytics for demand planning.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#0f172a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v={{ asset_version }}">
 </head>
-<body>
-  <main class="dashboard shell" id="content">
-    <header class="dashboard-head card">
-      <button type="button" id="themeToggle" class="theme-toggle theme-toggle-corner" aria-label="Toggle dark mode">Dark Mode</button>
-      <div>
-        <p class="eyebrow">Forecast Dashboard</p>
-        <h1>Retail Sales Forecast Intelligence</h1>
-        <p class="subtitle">Simple, fast, single-page planning dashboard for model quality and demand projections.</p>
+<body class="page-landing">
+  <main class="shell landing-page">
+    <header class="top-nav card">
+      <a class="brand" href="/">{{ payload.site.title }}</a>
+      <nav>
+        <a class="nav-link active" href="/">Landing</a>
+        <a class="nav-link" href="/results">Results</a>
+        <a class="nav-link" href="/model-performance">Model Performance</a>
+      </nav>
+      <div class="nav-actions">
+        <button type="button" id="navBack" class="theme-toggle" aria-label="Go back">Back</button>
+        <button type="button" id="navForward" class="theme-toggle" aria-label="Go forward">Forward</button>
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">Dark Mode</button>
       </div>
-      <div class="head-stats">
+    </header>
+
+    <section class="hero card">
+      <p class="eyebrow">Enterprise Forecasting Suite</p>
+      <h1>{{ payload.site.tagline }}</h1>
+      <p class="subtitle">{{ payload.site.description }}</p>
+      <div class="model-status">
+        <span class="status-chip status-{{ payload.globalStats.modelPerformanceLevel }}">Model Performance: {{ payload.globalStats.modelPerformanceLabel }}</span>
+      </div>
+      <div class="hero-metrics">
         <article>
           <h2>{{ payload.globalStats.categoriesTracked }}</h2>
-          <p>Categories</p>
+          <p>Tracked Categories</p>
+        </article>
+        <article>
+          <h2>{{ payload.globalStats.modelCount }}</h2>
+          <p>Models Evaluated</p>
+        </article>
+        <article>
+          <h2>{{ "%.2f"|format(payload.globalStats.performanceScore or 0) }}</h2>
+          <p>Performance Score</p>
         </article>
         <article>
           <h2>{{ "%.2f"|format(payload.globalStats.bestModelWMAPE or 0) }}%</h2>
           <p>Best WMAPE</p>
         </article>
-        <article>
-          <h2>{{ payload.globalStats.modelCount }}</h2>
-          <p>Models</p>
-        </article>
-      </div>
-    </header>
-
-    <section class="controls card" aria-label="Forecast controls">
-      <div class="control-group">
-        <label>View Scope</label>
-        <div class="scope-toggle" role="group" aria-label="View scope toggle">
-          <button type="button" id="scopeTotalBtn" class="toggle-btn active">Total</button>
-          <button type="button" id="scopeCategoryBtn" class="toggle-btn">Category</button>
-        </div>
-      </div>
-      <div class="control-group">
-        <label for="categorySelect">Category</label>
-        <select id="categorySelect"></select>
-      </div>
-      <div class="control-group">
-        <label for="horizonRange">Forecast Horizon: <span id="horizonValue">2</span> month(s)</label>
-        <input type="range" id="horizonRange" min="1" max="3" value="2">
-      </div>
-      <div class="control-group">
-        <label>Best Model</label>
-        <div class="best-model-tag" id="bestModelName">-</div>
       </div>
     </section>
 
-    <section class="kpi-grid" aria-label="Forecast KPIs">
-      <article class="kpi card">
-        <h3>Forecast Month</h3>
-        <p id="forecastMonth">-</p>
+    <section class="feature-grid">
+      <article class="card feature-card">
+        <h3>Results Workspace</h3>
+        <p>Interactive KPI and trend analytics with category, year, and date-range filters. Includes detailed result tables for decision-ready planning.</p>
+        <a class="btn btn-primary" href="/results">View Results</a>
       </article>
-      <article class="kpi card">
-        <h3>Predicted Sales</h3>
-        <p id="predictedSales">-</p>
-      </article>
-      <article class="kpi card">
-        <h3>Growth vs Prior</h3>
-        <p id="growthVsPrior">-</p>
-      </article>
-      <article class="kpi card">
-        <h3 id="accuracyLabel">Category Accuracy</h3>
-        <p id="categoryAccuracy">-</p>
+      <article class="card feature-card">
+        <h3>Model Performance Workspace</h3>
+        <p>Model-level benchmarking, error trend analysis, and category performance diagnostics with filters and comparison tables.</p>
+        <a class="btn btn-primary" href="/model-performance">View Model Performance</a>
       </article>
     </section>
 
-    <section class="chart-grid">
-      <article class="card chart-card">
-        <div class="card-head">
-          <h3>Historical vs Predicted</h3>
-          <p>Weekly trend and future trajectory</p>
-        </div>
-        <div id="trendChart" class="chart" aria-label="Historical trend chart"></div>
-      </article>
-
-      <article class="card chart-card">
-        <div class="card-head">
-          <h3>Model Comparison</h3>
-          <p>MAE and WMAPE across available models</p>
-        </div>
-        <div id="modelChart" class="chart" aria-label="Model comparison chart"></div>
-      </article>
-    </section>
-
-    <section class="table-grid">
-      <article class="card table-card">
-        <div class="card-head">
-          <h3>Forecast by Month</h3>
-          <p>Selected category based on horizon</p>
-        </div>
-        <div class="table-wrap">
-          <table id="futureTable">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Predicted Sales</th>
-                <th>Growth vs Prior (%)</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="card table-card">
-        <div class="card-head">
-          <h3>Top Categories (Next Month)</h3>
-          <p>Highest projected demand</p>
-        </div>
-        <div class="table-wrap">
-          <table id="topTable">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Predicted Sales</th>
-                <th>Growth vs Last Month (%)</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </article>
-    </section>
+    <footer class="footer-note">
+      <p>{{ payload.site.metaDescription }}</p>
+    </footer>
   </main>
 
   <script>
     window.__PAYLOAD__ = {{ payload | tojson }};
   </script>
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
-  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v={{ asset_version }}" defer></script>
 </body>
 </html>

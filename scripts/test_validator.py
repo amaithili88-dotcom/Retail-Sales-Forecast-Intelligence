@@ -6,7 +6,7 @@ from src.validators.sales_validator import SalesValidator
 
 def main():
 
-    extractor = CSVExtractor("data/raw/salesmonthly.csv")
+    extractor = CSVExtractor("data/Walmart.csv")
     df = extractor.extract()
 
     validator = SalesValidator()

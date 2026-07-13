@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results | {{ payload.site.title }}</title>
+  <meta name="description" content="Forecast results with filters, KPI cards, trend visuals, and detailed tables.">
+  <meta property="og:title" content="Results | {{ payload.site.title }}">
+  <meta property="og:description" content="Forecasting results analytics for planning teams.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v={{ asset_version }}">
+</head>
+<body class="page-results">
+  <main class="shell app-page">
+    <header class="top-nav card">
+      <a class="brand" href="/">{{ payload.site.title }}</a>
+      <nav>
+        <a class="nav-link" href="/">Landing</a>
+        <a class="nav-link active" href="/results">Results</a>
+        <a class="nav-link" href="/model-performance">Model Performance</a>
+      </nav>
+      <div class="nav-actions">
+        <button type="button" id="navBack" class="theme-toggle" aria-label="Go back">Back</button>
+        <button type="button" id="navForward" class="theme-toggle" aria-label="Go forward">Forward</button>
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">Dark Mode</button>
+      </div>
+    </header>
+
+    <section class="page-head card">
+      <p class="eyebrow">Results Analytics</p>
+      <h1>Forecast Results</h1>
+      <p class="subtitle">Track actual vs predicted behavior, monitor future projections, and inspect detailed rows with advanced filters.</p>
+    </section>
+
+    <section class="filter-grid card" aria-label="Results filters">
+      <div class="control-group">
+        <label for="resultsCategory">Category</label>
+        <select id="resultsCategory"></select>
+      </div>
+      <div class="control-group">
+        <label for="resultsYear">Year</label>
+        <select id="resultsYear"></select>
+      </div>
+      <div class="control-group">
+        <label for="resultsStartDate">Start Date</label>
+        <input type="date" id="resultsStartDate">
+      </div>
+      <div class="control-group">
+        <label for="resultsEndDate">End Date</label>
+        <input type="date" id="resultsEndDate">
+      </div>
+      <div class="control-group control-actions">
+        <button type="button" id="resultsApply" class="btn btn-primary">Apply</button>
+        <button type="button" id="resultsReset" class="btn btn-secondary">Reset</button>
+      </div>
+    </section>
+
+    <section class="kpi-grid" aria-label="Results KPIs">
+      <article class="kpi card">
+        <h3>Total Actual</h3>
+        <p id="resultsTotalActual">-</p>
+      </article>
+      <article class="kpi card">
+        <h3>Total Predicted</h3>
+        <p id="resultsTotalPredicted">-</p>
+      </article>
+      <article class="kpi card">
+        <h3>WMAPE</h3>
+        <p id="resultsWmape">-</p>
+      </article>
+      <article class="kpi card">
+        <h3>Next Month Forecast</h3>
+        <p id="resultsNextMonth">-</p>
+      </article>
+    </section>
+
+    <section class="chart-grid two-columns">
+      <article class="card chart-card">
+        <div class="card-head">
+          <h3>Actual vs Predicted Trend</h3>
+          <p>Time-series comparison for selected scope.</p>
+        </div>
+        <div id="resultsTrendChart" class="chart"></div>
+      </article>
+      <article class="card chart-card">
+        <div class="card-head">
+          <h3>Monthly Forecast Outlook</h3>
+          <p>Future monthly projection by selected scope.</p>
+        </div>
+        <div id="resultsForecastChart" class="chart"></div>
+      </article>
+    </section>
+
+    <section class="table-grid two-columns">
+      <article class="card table-card">
+        <div class="card-head">
+          <h3>Filtered Results Table</h3>
+          <p>Date-level actual, prediction, and error values.</p>
+        </div>
+        <div class="table-wrap">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Actual</th>
+                <th>Predicted</th>
+                <th>Abs Error</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card table-card">
+        <div class="card-head">
+          <h3>Future Forecast Table</h3>
+          <p>Monthly projection and growth rates.</p>
+        </div>
+        <div class="table-wrap">
+          <table id="resultsFutureTable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Category</th>
+                <th>Predicted Sales</th>
+                <th>Growth vs Previous (%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    window.__PAYLOAD__ = {{ payload | tojson }};
+  </script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v={{ asset_version }}" defer></script>
+</body>
+</html>
