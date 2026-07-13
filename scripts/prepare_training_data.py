@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 
 from src.features.feature_engineering import FeatureEngineering
 
@@ -10,9 +11,19 @@ print("=" * 60)
 # Load Raw Dataset
 # ----------------------------------------------------
 
-df = pd.read_csv(
-    "data/processed/pharma_sales_processed.csv"
-)
+processed_candidates = [
+    Path("data/processed/walmart_sales_processed.csv"),
+    Path("data/processed/pharma_sales_processed.csv"),
+]
+
+processed_path = next((p for p in processed_candidates if p.exists()), None)
+
+if processed_path is None:
+    raise FileNotFoundError(
+        "No processed dataset found. Expected data/processed/walmart_sales_processed.csv or data/processed/pharma_sales_processed.csv"
+    )
+
+df = pd.read_csv(processed_path)
 
 print("\nRaw Dataset Shape")
 print(df.shape)

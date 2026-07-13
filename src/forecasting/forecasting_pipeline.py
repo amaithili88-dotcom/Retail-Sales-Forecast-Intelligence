@@ -39,12 +39,16 @@ class ForecastingPipeline:
 
         project_root = Path(__file__).resolve().parents[2]
 
-        processed_path = (
+        processed_candidates = [
             project_root
             / "data"
             / "processed"
-            / "pharma_sales_processed.csv"
-        )
+            / "walmart_sales_processed.csv",
+            project_root
+            / "data"
+            / "processed"
+            / "pharma_sales_processed.csv",
+        ]
 
         walmart_path = (
             project_root
@@ -52,7 +56,9 @@ class ForecastingPipeline:
             / "Walmart.csv"
         )
 
-        if processed_path.exists():
+        processed_path = next((p for p in processed_candidates if p.exists()), None)
+
+        if processed_path is not None:
             self.df = pd.read_csv(processed_path)
             return self.df
 
@@ -87,7 +93,7 @@ class ForecastingPipeline:
             return self.df
 
         raise FileNotFoundError(
-            "No supported dataset found. Expected data/processed/pharma_sales_processed.csv or data/Walmart.csv"
+            "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/Walmart.csv"
         )
 
     # ----------------------------------------------------

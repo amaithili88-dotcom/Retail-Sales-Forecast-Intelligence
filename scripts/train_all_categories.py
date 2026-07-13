@@ -27,10 +27,15 @@ BEST_XGBOOST_PARAMS = {
 
 def load_input_data():
 
-    processed_path = Path("data/processed/pharma_sales_processed.csv")
+    processed_candidates = [
+        Path("data/processed/walmart_sales_processed.csv"),
+        Path("data/processed/pharma_sales_processed.csv"),
+    ]
     walmart_path = Path("data/Walmart.csv")
 
-    if processed_path.exists():
+    processed_path = next((p for p in processed_candidates if p.exists()), None)
+
+    if processed_path is not None:
         return pd.read_csv(processed_path)
 
     if walmart_path.exists():
@@ -58,7 +63,7 @@ def load_input_data():
         return walmart_df
 
     raise FileNotFoundError(
-        "No supported dataset found. Expected data/processed/pharma_sales_processed.csv or data/Walmart.csv"
+        "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/Walmart.csv"
     )
 
 # --------------------------------------------------
