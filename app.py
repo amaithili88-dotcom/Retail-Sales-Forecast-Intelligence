@@ -6,13 +6,17 @@ from flask import Flask, jsonify, render_template
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data" / "processed"
+RAW_DIR       = BASE_DIR / "data" / "raw"
+PROCESSED_DIR = BASE_DIR / "data" / "processed"
+OUTPUTS_DIR   = BASE_DIR / "data" / "outputs"
 
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static"),
 )
+
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 ASSET_VERSION = str(int(time.time()))
 
@@ -43,10 +47,10 @@ def _safe_float(value):
 
 
 def build_dashboard_payload():
-    predictions = _load_csv(DATA_DIR / "global_predictions.csv")
-    comparison = _load_csv(DATA_DIR / "model_comparison.csv")
-    future_weekly = _load_csv(DATA_DIR / "future_weekly_predictions.csv")
-    future_month = _load_csv(DATA_DIR / "future_month_forecast.csv")
+    predictions = _load_csv(OUTPUTS_DIR / "global_predictions.csv")
+    comparison = _load_csv(OUTPUTS_DIR / "model_comparison.csv")
+    future_weekly = _load_csv(OUTPUTS_DIR / "future_weekly_predictions.csv")
+    future_month = _load_csv(OUTPUTS_DIR / "future_month_forecast.csv")
 
     if predictions is None or comparison is None:
         raise FileNotFoundError(
@@ -100,10 +104,12 @@ def build_dashboard_payload():
             ],
             "future_weekly": [],
             "future_monthly": [],
+            "future_daily": [],
         }
 
         if future_weekly is not None and not future_weekly.empty:
             future_cat = future_weekly[future_weekly["category"] == category].copy()
+            future_cat = future_cat.sort_values("date")
             category_payload["future_weekly"] = [
                 {
                     "date": row["date"].strftime("%Y-%m-%d"),
@@ -111,6 +117,25 @@ def build_dashboard_payload():
                 }
                 for _, row in future_cat.iterrows()
             ]
+            # Create daily forecasts from weekly data by spreading each week's forecast across 7 days
+            daily_forecasts = []
+            for _, row in future_cat.iterrows():
+                week_date = pd.to_datetime(row["date"])
+                weekly_prediction = _safe_float(row["prediction"])
+                if weekly_prediction is not None:
+                    daily_value = weekly_prediction / 7  # Divide weekly by 7 for daily estimate
+                    # Generate dates for each day of the week
+                    for day_offset in range(7):
+                        day_date = week_date + pd.Timedelta(days=day_offset)
+                        daily_forecasts.append({
+                            "date": day_date.strftime("%Y-%m-%d"),
+                            "category": category,
+                            "prediction": daily_value,
+                            "week_date": week_date.strftime("%Y-%m-%d"),
+                        })
+            category_payload["future_daily"] = daily_forecasts
+        else:
+            category_payload["future_daily"] = []
 
         if future_month is not None and not future_month.empty:
             future_month_cat = future_month[future_month["category"] == category].copy()

@@ -21,7 +21,7 @@ def load_input_data():
         Path("data/processed/walmart_sales_processed.csv"),
         Path("data/processed/pharma_sales_processed.csv"),
     ]
-    walmart_path = Path("data/Walmart.csv")
+    walmart_path = Path("data/raw/Walmart.csv")
 
     processed_path = next((p for p in processed_candidates if p.exists()), None)
 
@@ -53,7 +53,7 @@ def load_input_data():
         return walmart_df
 
     raise FileNotFoundError(
-        "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/Walmart.csv"
+        "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/raw/Walmart.csv"
     )
 
 
@@ -429,9 +429,10 @@ print("=" * 70)
 
 print(results_df)
 
+os.makedirs("data/outputs", exist_ok=True)
 results_df.to_csv(
-    "data/processed/model_comparison.csv",
+    "data/outputs/model_comparison.csv",
     index=False
 )
 
-print("\nSaved -> data/processed/model_comparison.csv")
+print("\nSaved -> data/outputs/model_comparison.csv")

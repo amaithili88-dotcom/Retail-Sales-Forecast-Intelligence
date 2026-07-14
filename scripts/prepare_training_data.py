@@ -20,7 +20,7 @@ processed_path = next((p for p in processed_candidates if p.exists()), None)
 
 if processed_path is None:
     raise FileNotFoundError(
-        "No processed dataset found. Expected data/processed/walmart_sales_processed.csv or data/processed/pharma_sales_processed.csv"
+        "No processed dataset found. Run main.py first to generate data/processed/walmart_sales_processed.csv"
     )
 
 df = pd.read_csv(processed_path)
@@ -52,6 +52,7 @@ print(df.shape)
 # Save Training Dataset
 # ----------------------------------------------------
 
+os.makedirs("data/processed", exist_ok=True)
 df.to_csv(
     "data/processed/training_dataset.csv",
     index=False

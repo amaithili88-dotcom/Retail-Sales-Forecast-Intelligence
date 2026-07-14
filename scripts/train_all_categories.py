@@ -31,7 +31,7 @@ def load_input_data():
         Path("data/processed/walmart_sales_processed.csv"),
         Path("data/processed/pharma_sales_processed.csv"),
     ]
-    walmart_path = Path("data/Walmart.csv")
+    walmart_path = Path("data/raw/Walmart.csv")
 
     processed_path = next((p for p in processed_candidates if p.exists()), None)
 
@@ -63,7 +63,7 @@ def load_input_data():
         return walmart_df
 
     raise FileNotFoundError(
-        "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/Walmart.csv"
+        "No supported dataset found. Expected data/processed/walmart_sales_processed.csv, data/processed/pharma_sales_processed.csv, or data/raw/Walmart.csv"
     )
 
 # --------------------------------------------------
@@ -204,15 +204,15 @@ print("models/global_xgboost.pkl")
 # --------------------------------------------------
 # Save Predictions
 # --------------------------------------------------
-os.makedirs("data/processed", exist_ok=True)
+os.makedirs("data/outputs", exist_ok=True)
 
 results.to_csv(
-    "data/processed/global_predictions.csv",
+    "data/outputs/global_predictions.csv",
     index=False
 )
 
 print("\nPredictions Saved")
-print("data/processed/global_predictions.csv")
+print("data/outputs/global_predictions.csv")
 
 # --------------------------------------------------
 # Save Next-Month Forecasts
@@ -230,19 +230,19 @@ weekly_future, monthly_future = future_forecaster.forecast_next_month(
 
 if not weekly_future.empty:
     weekly_future.to_csv(
-        "data/processed/future_weekly_predictions.csv",
+        "data/outputs/future_weekly_predictions.csv",
         index=False
     )
     print("\nFuture Weekly Forecast Saved")
-    print("data/processed/future_weekly_predictions.csv")
+    print("data/outputs/future_weekly_predictions.csv")
 
 if not monthly_future.empty:
     monthly_future.to_csv(
-        "data/processed/future_month_forecast.csv",
+        "data/outputs/future_month_forecast.csv",
         index=False
     )
     print("\nFuture Month Forecast Saved")
-    print("data/processed/future_month_forecast.csv")
+    print("data/outputs/future_month_forecast.csv")
     print("\nFuture Month Forecast Preview")
     print(monthly_future.head(10))
 

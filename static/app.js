@@ -32,6 +32,15 @@
     return d.toISOString().slice(0, 10);
   }
 
+  function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : [255, 150, 0];
+  }
+
   function getDateBounds(rows, dateKey = "date") {
     const timestamps = rows
       .map((row) => parseDate(row[dateKey]))
@@ -187,18 +196,15 @@
   function buildFutureRows() {
     const rows = [];
     Object.entries(payload.byCategory || {}).forEach(([category, data]) => {
-      (data.future_monthly || []).forEach((row) => {
+      (data.future_daily || []).forEach((row) => {
         rows.push({
           category,
-          month_index: Number(row.month_index || 0),
-          forecast_month: row.forecast_month || "",
-          date: row.forecast_month ? `${row.forecast_month}-01` : "",
-          predicted_sales: Number(row.predicted_sales || 0),
-          growth_vs_previous_month_pct: row.growth_vs_previous_month_pct,
+          date: row.date || "",
+          prediction: Number(row.prediction || 0),
         });
       });
     });
-    return rows;
+    return rows.sort((a, b) => (a.date < b.date ? -1 : 1));
   }
 
   function filterRows(rows, filters, dateKey = "date") {
@@ -304,14 +310,16 @@
       };
 
       const selectedRows = filterRows(historicalRows, filters, "date");
-      const selectedFuture = filterRows(futureRows, filters, "date").sort((a, b) => a.month_index - b.month_index);
+      // For future forecast, only filter by category (not by date range)
+      const futureFilter = { category: filters.category };
+      const selectedFuture = filterRows(futureRows, futureFilter, "date").sort((a, b) => (a.date < b.date ? -1 : 1));
       const metrics = computeMetrics(selectedRows);
       const colors = chartColors();
 
       totalActualEl.textContent = fmtNumber(metrics.totalActual);
       totalPredictedEl.textContent = fmtNumber(metrics.totalPredicted);
       wmapeEl.textContent = fmtPct(metrics.wmape);
-      nextMonthEl.textContent = selectedFuture.length ? fmtNumber(selectedFuture[0].predicted_sales) : "-";
+      nextMonthEl.textContent = selectedFuture.length ? fmtNumber(selectedFuture[0].prediction) : "-";
 
       const trendRows = aggregateByDate(selectedRows);
       plot(
@@ -345,24 +353,53 @@
         }
       );
 
+      // Generate date range text for future forecast
+      const dateRangeText = selectedFuture.length > 0 
+        ? `${selectedFuture[0].date} to ${selectedFuture[selectedFuture.length - 1].date}`
+        : "No future data";
+
       plot(
         "resultsForecastChart",
         [
           {
-            x: selectedFuture.map((r) => r.forecast_month),
-            y: selectedFuture.map((r) => r.predicted_sales),
+            x: selectedFuture.map((r) => r.date),
+            y: selectedFuture.map((r) => r.prediction),
             type: "bar",
-            marker: { color: colors.future },
-            name: "Predicted Sales",
+            marker: { 
+              color: colors.future,
+              line: { color: colors.future, width: 0.5 }
+            },
+            name: "Daily Forecast Sales",
+            hovertemplate: "<b>%{x}</b><br>Forecast Sales: $%{y:,.0f}<extra></extra>",
           },
         ],
         {
-          margin: { l: 56, r: 16, t: 10, b: 44 },
+          margin: { l: 60, r: 16, t: 60, b: 100 },
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
-          font: { family: "IBM Plex Sans, sans-serif", color: colors.font },
-          xaxis: { gridcolor: colors.grid },
-          yaxis: { gridcolor: colors.grid },
+          font: { family: "IBM Plex Sans, sans-serif", color: colors.font, size: 11 },
+          xaxis: { 
+            gridcolor: "rgba(128, 128, 128, 0.2)",
+            tickangle: -45,
+            showgrid: true,
+            type: "category",
+          },
+          yaxis: { 
+            gridcolor: "rgba(128, 128, 128, 0.2)", 
+            title: "Daily Forecast Sales Value",
+            showgrid: true,
+          },
+          hovermode: "closest",
+          legend: { orientation: "h", y: 1.15 },
+          height: 400,
+          bargap: 0.05,
+          annotations: [{
+            text: `${dateRangeText} • ${selectedFuture.length} days of forecast data`,
+            xref: "paper", yref: "paper",
+            x: 0.5, y: 1.06,
+            showarrow: false,
+            font: { size: 12, color: colors.font }
+          }]
         }
       );
 
@@ -382,18 +419,23 @@
 
       const futureBody = document.querySelector("#resultsFutureTable tbody");
       futureBody.innerHTML = "";
-      selectedFuture.slice(0, 120).forEach((row) => {
+      selectedFuture.slice(0, 500).forEach((row) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${row.forecast_month || "-"}</td>
+          <td>${row.date || "-"}</td>
           <td>${row.category}</td>
-          <td>${fmtNumber(row.predicted_sales)}</td>
-          <td>${fmtPct(row.growth_vs_previous_month_pct)}</td>
+          <td>${fmtNumber(row.prediction)}</td>
         `;
         futureBody.appendChild(tr);
       });
     }
 
+    // Auto-update on filter change
+    categorySelect.addEventListener("change", render);
+    yearSelect.addEventListener("change", render);
+    startDateInput.addEventListener("change", render);
+    endDateInput.addEventListener("change", render);
+    
     applyBtn.addEventListener("click", render);
     resetBtn.addEventListener("click", () => {
       categorySelect.value = TOTAL_KEY;
@@ -584,6 +626,12 @@
       });
     }
 
+    // Auto-update on filter change
+    categorySelect.addEventListener("change", render);
+    yearSelect.addEventListener("change", render);
+    startDateInput.addEventListener("change", render);
+    endDateInput.addEventListener("change", render);
+    
     applyBtn.addEventListener("click", render);
     resetBtn.addEventListener("click", () => {
       categorySelect.value = TOTAL_KEY;
@@ -597,15 +645,15 @@
     render();
   }
 
-  function initLandingPage() {
-    if (!body.classList.contains("page-landing")) return;
+  function initHomePage() {
+    if (!body.classList.contains("page-home")) return;
     rerenderActivePage = null;
   }
 
   function init() {
     wireThemeToggle();
     wireHistoryButtons();
-    initLandingPage();
+    initHomePage();
     initResultsPage();
     initModelPerformancePage();
   }

@@ -8,7 +8,7 @@ from src.pipelines.etl_pipeline import ETLPipeline
 def main():
 
     pipeline = ETLPipeline(
-        input_path="data/Walmart.csv",
+        input_path="data/raw/Walmart.csv",
         output_path="data/processed/walmart_sales_processed.csv"
     )
 

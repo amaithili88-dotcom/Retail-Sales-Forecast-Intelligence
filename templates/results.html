@@ -19,7 +19,7 @@
     <header class="top-nav card">
       <a class="brand" href="/">{{ payload.site.title }}</a>
       <nav>
-        <a class="nav-link" href="/">Landing</a>
+        <a class="nav-link" href="/">Home</a>
         <a class="nav-link active" href="/results">Results</a>
         <a class="nav-link" href="/model-performance">Model Performance</a>
       </nav>
@@ -60,20 +60,20 @@
     </section>
 
     <section class="kpi-grid" aria-label="Results KPIs">
-      <article class="kpi card">
-        <h3>Total Actual</h3>
+      <article class="kpi card" title="Total actual sales value for the selected period">
+        <h3>Total Actual Sales</h3>
         <p id="resultsTotalActual">-</p>
       </article>
-      <article class="kpi card">
-        <h3>Total Predicted</h3>
+      <article class="kpi card" title="Total predicted sales value for the selected period">
+        <h3>Total Predicted Sales</h3>
         <p id="resultsTotalPredicted">-</p>
       </article>
-      <article class="kpi card">
-        <h3>WMAPE</h3>
+      <article class="kpi card" title="Weighted Mean Absolute Percentage Error - Average absolute error as percentage of actual sales values. Lower is better (ideal: <10%, good: <15%, acceptable: <20%)">
+        <h3>WMAPE Error %</h3>
         <p id="resultsWmape">-</p>
       </article>
-      <article class="kpi card">
-        <h3>Next Month Forecast</h3>
+      <article class="kpi card" title="Forecasted sales value for the next day based on historical trends">
+        <h3>Next Day Forecast Sales</h3>
         <p id="resultsNextMonth">-</p>
       </article>
     </section>
@@ -88,8 +88,8 @@
       </article>
       <article class="card chart-card">
         <div class="card-head">
-          <h3>Monthly Forecast Outlook</h3>
-          <p>Future monthly projection by selected scope.</p>
+          <h3>Daily Forecast Outlook</h3>
+          <p>Future daily projection by selected scope.</p>
         </div>
         <div id="resultsForecastChart" class="chart"></div>
       </article>
@@ -120,16 +120,15 @@
       <article class="card table-card">
         <div class="card-head">
           <h3>Future Forecast Table</h3>
-          <p>Monthly projection and growth rates.</p>
+          <p>Daily forecast projections for upcoming periods.</p>
         </div>
         <div class="table-wrap">
           <table id="resultsFutureTable">
             <thead>
               <tr>
-                <th>Month</th>
+                <th>Date</th>
                 <th>Category</th>
                 <th>Predicted Sales</th>
-                <th>Growth vs Previous (%)</th>
               </tr>
             </thead>
             <tbody></tbody>

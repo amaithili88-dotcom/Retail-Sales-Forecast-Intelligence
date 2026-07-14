@@ -14,12 +14,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v={{ asset_version }}">
 </head>
-<body class="page-landing">
-  <main class="shell landing-page">
+<body class="page-home">
+  <main class="shell home-page">
     <header class="top-nav card">
       <a class="brand" href="/">{{ payload.site.title }}</a>
       <nav>
-        <a class="nav-link active" href="/">Landing</a>
+        <a class="nav-link active" href="/">Home</a>
         <a class="nav-link" href="/results">Results</a>
         <a class="nav-link" href="/model-performance">Model Performance</a>
       </nav>
@@ -38,19 +38,19 @@
         <span class="status-chip status-{{ payload.globalStats.modelPerformanceLevel }}">Model Performance: {{ payload.globalStats.modelPerformanceLabel }}</span>
       </div>
       <div class="hero-metrics">
-        <article>
+        <article title="Total number of product/service categories being tracked for demand forecasting">
           <h2>{{ payload.globalStats.categoriesTracked }}</h2>
           <p>Tracked Categories</p>
         </article>
-        <article>
+        <article title="Number of machine learning models evaluated and compared in the system">
           <h2>{{ payload.globalStats.modelCount }}</h2>
           <p>Models Evaluated</p>
         </article>
-        <article>
+        <article title="Overall performance score combining accuracy metrics across all models">
           <h2>{{ "%.2f"|format(payload.globalStats.performanceScore or 0) }}</h2>
           <p>Performance Score</p>
         </article>
-        <article>
+        <article title="Weighted Mean Absolute Percentage Error of the best performing model (lower is better)">
           <h2>{{ "%.2f"|format(payload.globalStats.bestModelWMAPE or 0) }}%</h2>
           <p>Best WMAPE</p>
         </article>

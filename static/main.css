@@ -59,7 +59,7 @@ h3 {
 }
 
 .app-page,
-.landing-page {
+.home-page {
   padding: 20px 0 40px;
 }
 
@@ -275,6 +275,44 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
+  position: relative;
+  cursor: help;
+}
+
+.hero-metrics article:hover {
+  background: color-mix(in srgb, var(--surface-soft) 95%, var(--brand) 5%);
+  transition: background 0.2s ease;
+}
+
+[data-theme="dark"] .hero-metrics article:hover {
+  background: color-mix(in srgb, var(--surface-soft) 92%, var(--brand) 8%);
+}
+
+.hero-metrics article::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: normal;
+  max-width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 100;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hero-metrics article:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 .hero-metrics h2 {
@@ -383,6 +421,44 @@ input[type="date"] {
 
 .kpi {
   padding: 14px;
+  position: relative;
+  cursor: help;
+}
+
+.kpi:hover {
+  background: color-mix(in srgb, var(--surface) 95%, var(--brand) 5%);
+  transition: background 0.2s ease;
+}
+
+[data-theme="dark"] .kpi:hover {
+  background: color-mix(in srgb, var(--surface) 92%, var(--brand) 8%);
+}
+
+.kpi::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: normal;
+  max-width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 100;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.kpi:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 .kpi h3 {
@@ -452,7 +528,31 @@ input[type="date"] {
 }
 
 .table-wrap {
-  overflow: auto;
+  overflow-y: scroll;
+  overflow-x: auto;
+  max-height: 350px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-right: 2px;
+}
+
+.table-wrap::-webkit-scrollbar {
+  width: 12px;
+}
+
+.table-wrap::-webkit-scrollbar-track {
+  background: var(--surface-soft);
+  border-radius: 6px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand) 60%, var(--line) 40%);
+  border-radius: 6px;
+  border: 2px solid var(--surface-soft);
+}
+
+.table-wrap::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--brand) 80%, var(--line) 20%);
 }
 
 table {

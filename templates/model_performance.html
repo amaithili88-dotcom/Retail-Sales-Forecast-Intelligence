@@ -19,7 +19,7 @@
     <header class="top-nav card">
       <a class="brand" href="/">{{ payload.site.title }}</a>
       <nav>
-        <a class="nav-link" href="/">Landing</a>
+        <a class="nav-link" href="/">Home</a>
         <a class="nav-link" href="/results">Results</a>
         <a class="nav-link active" href="/model-performance">Model Performance</a>
       </nav>
@@ -65,36 +65,36 @@
     </section>
 
     <section class="kpi-grid" aria-label="Model KPIs">
-      <article class="kpi card">
+      <article class="kpi card" title="Mean Absolute Error - Average absolute difference between predicted and actual values. Lower is better.">
         <h3>Selected MAE</h3>
         <p id="perfMae">-</p>
       </article>
-      <article class="kpi card">
+      <article class="kpi card" title="Root Mean Square Error - Penalizes larger errors more heavily. Lower is better.">
         <h3>Selected RMSE</h3>
         <p id="perfRmse">-</p>
       </article>
-      <article class="kpi card">
-        <h3>Selected WMAPE</h3>
+      <article class="kpi card" title="Weighted Mean Absolute Percentage Error - Percentage error metric. Lower is better (ideal: <10%).">
+        <h3>Selected WMAPE %</h3>
         <p id="perfWmape">-</p>
       </article>
-      <article class="kpi card">
-        <h3>Selected R2</h3>
+      <article class="kpi card" title="R-squared coefficient - Explains variance in data (0-1). Higher is better (ideal: >0.8).">
+        <h3>Selected R² Score</h3>
         <p id="perfR2">-</p>
       </article>
-      <article class="kpi card">
+      <article class="kpi card" title="The model with the best overall performance across all metrics">
         <h3>Best Model</h3>
         <p id="perfBestModel">-</p>
       </article>
-      <article class="kpi card">
+      <article class="kpi card" title="Mean Absolute Error of the best performing model">
         <h3>Best Model MAE</h3>
         <p id="perfBestMae">-</p>
       </article>
-      <article class="kpi card">
+      <article class="kpi card" title="Root Mean Square Error of the best performing model">
         <h3>Best Model RMSE</h3>
         <p id="perfBestRmse">-</p>
       </article>
-      <article class="kpi card">
-        <h3>Best Model WMAPE</h3>
+      <article class="kpi card" title="Weighted Mean Absolute Percentage Error of the best performing model">
+        <h3>Best Model WMAPE %</h3>
         <p id="perfBestWmape">-</p>
       </article>
     </section>
